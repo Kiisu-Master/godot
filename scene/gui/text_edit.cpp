@@ -519,7 +519,6 @@ void TextEdit::_notification(int p_what) {
 			_update_scrollbars();
 
 			RID ci = get_canvas_item();
-			RenderingServer::get_singleton()->canvas_item_set_clip(get_canvas_item(), true);
 			int xmargin_beg = theme_cache.style_normal->get_margin(SIDE_LEFT) + gutters_width + gutter_padding;
 
 			int xmargin_end = size.width - theme_cache.style_normal->get_margin(SIDE_RIGHT);
@@ -535,6 +534,8 @@ void TextEdit::_notification(int p_what) {
 			if (has_focus()) {
 				theme_cache.style_focus->draw(ci, Rect2(Point2(), size));
 			}
+
+			RenderingServer::get_singleton()->canvas_item_set_clip(ci, true);
 
 			int visible_rows = get_visible_line_count() + 1;
 
@@ -1491,6 +1492,7 @@ void TextEdit::_notification(int p_what) {
 					DisplayServer::get_singleton()->window_set_ime_position(pos, get_viewport()->get_window_id());
 				}
 			}
+			RenderingServer::get_singleton()->canvas_item_set_clip(ci, data.clip_contents);
 		} break;
 
 		case NOTIFICATION_FOCUS_ENTER: {
