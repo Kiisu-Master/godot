@@ -1040,9 +1040,7 @@ void ItemList::_notification(int p_what) {
 			bool rtl = is_layout_rtl();
 
 			if (has_focus()) {
-				RenderingServer::get_singleton()->canvas_item_add_clip_ignore(get_canvas_item(), true);
 				draw_style_box(theme_cache.focus_style, Rect2(Point2(), size));
-				RenderingServer::get_singleton()->canvas_item_add_clip_ignore(get_canvas_item(), false);
 			}
 
 			// Ensure_selected_visible needs to be checked before we draw the list.
