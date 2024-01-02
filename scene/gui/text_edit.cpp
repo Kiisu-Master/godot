@@ -1492,7 +1492,7 @@ void TextEdit::_notification(int p_what) {
 					DisplayServer::get_singleton()->window_set_ime_position(pos, get_viewport()->get_window_id());
 				}
 			}
-			RenderingServer::get_singleton()->canvas_item_set_clip(ci, data.clip_contents);
+			RenderingServer::get_singleton()->canvas_item_set_clip(ci, Control::is_clipping_contents());
 		} break;
 
 		case NOTIFICATION_FOCUS_ENTER: {
