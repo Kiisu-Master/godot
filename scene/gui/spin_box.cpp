@@ -162,12 +162,12 @@ void SpinBox::gui_input(const Ref<InputEvent> &p_event) {
 
 				drag.allowed = true;
 				drag.capture_pos = mb->get_position();
-				accept_event()
+				accept_event();
 			} break;
 			case MouseButton::RIGHT: {
 				line_edit->grab_focus();
 				set_value((up ? get_max() : get_min()));
-				accept_event()
+				accept_event();
 			} break;
 			case MouseButton::WHEEL_UP: {
 				if (line_edit->has_focus()) {
