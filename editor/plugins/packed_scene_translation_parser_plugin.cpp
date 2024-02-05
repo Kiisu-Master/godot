@@ -92,8 +92,10 @@ Error PackedSceneEditorTranslationParserPlugin::parse_file(const String &p_path,
 
 		for (int j = 0; j < state->get_node_property_count(i); j++) {
 			String property_name = state->get_node_property_name(i, j);
-			if (!lookup_properties.has(property_name) || (exception_list.has(node_type) && exception_list[node_type].has(property_name))) {
-				continue;
+			if (!property_name.match("popup/*/text")) {
+				if (!lookup_properties.has(property_name) || (exception_list.has(node_type) && exception_list[node_type].has(property_name))) {
+					continue;
+				}
 			}
 
 			Variant property_value = state->get_node_property_value(i, j);
