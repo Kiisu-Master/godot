@@ -54,6 +54,15 @@ Error PackedSceneEditorTranslationParserPlugin::parse_file(const String &p_path,
 	Vector<String> parsed_strings;
 	for (int i = 0; i < state->get_node_count(); i++) {
 		String node_type = state->get_node_type(i);
+
+		if (node_type.is_empty()) {
+			Ref<PackedScene> instance = state->get_node_instance(i);
+			if (!instance.is_null()) {
+				Ref<SceneState> _state = instance->get_state();
+				node_type = _state->get_node_type(0);
+			}
+		}
+
 		if (!ClassDB::is_parent_class(node_type, "Control") && !ClassDB::is_parent_class(node_type, "Window")) {
 			continue;
 		}
@@ -72,7 +81,8 @@ Error PackedSceneEditorTranslationParserPlugin::parse_file(const String &p_path,
 
 		for (int j = 0; j < state->get_node_property_count(i); j++) {
 			String property_name = state->get_node_property_name(i, j);
-			if (!lookup_properties.has(property_name) || (exception_list.has(node_type) && exception_list[node_type].has(property_name))) {
+
+			if (!match_property(property_name, node_type)) {
 				continue;
 			}
 
@@ -87,15 +97,6 @@ Error PackedSceneEditorTranslationParserPlugin::parse_file(const String &p_path,
 					EditorTranslationParser::get_singleton()->get_parser(extension)->parse_file(s->get_path(), &temp, &ids_context_plural);
 					parsed_strings.append_array(temp);
 					r_ids_ctx_plural->append_array(ids_context_plural);
-				}
-			} else if ((node_type == "MenuButton" || node_type == "OptionButton") && property_name == "items") {
-				Vector<String> str_values = property_value;
-				int incr_value = node_type == "MenuButton" ? PopupMenu::ITEM_PROPERTY_SIZE : OptionButton::ITEM_PROPERTY_SIZE;
-				for (int k = 0; k < str_values.size(); k += incr_value) {
-					String desc = str_values[k].get_slice(";", 1).strip_edges();
-					if (!desc.is_empty()) {
-						parsed_strings.push_back(desc);
-					}
 				}
 			} else if (node_type == "FileDialog" && property_name == "filters") {
 				// Extract FileDialog's filters property with values in format "*.png ; PNG Images","*.gd ; GDScript Files".
@@ -121,14 +122,30 @@ Error PackedSceneEditorTranslationParserPlugin::parse_file(const String &p_path,
 	return OK;
 }
 
+bool PackedSceneEditorTranslationParserPlugin::match_property(String &property_name, String &node_type) {
+	if (exception_list.has(node_type)) {
+		for (int p = 0; p < exception_list[node_type].size(); p++) {
+			String exception = exception_list[node_type][p];
+			if (property_name.match(exception)) {
+				return false;
+			}
+		}
+	}
+	for (const String &lookup_property : lookup_properties) {
+		if (property_name.match(lookup_property)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 PackedSceneEditorTranslationParserPlugin::PackedSceneEditorTranslationParserPlugin() {
 	// Scene Node's properties containing strings that will be fetched for translation.
 	lookup_properties.insert("text");
-	lookup_properties.insert("tooltip_text");
-	lookup_properties.insert("placeholder_text");
+	lookup_properties.insert("*_text");
 	lookup_properties.insert("items");
+	lookup_properties.insert("popup/*/text");
 	lookup_properties.insert("title");
-	lookup_properties.insert("dialog_text");
 	lookup_properties.insert("filters");
 	lookup_properties.insert("script");
 
