@@ -284,7 +284,6 @@ Button *ProjectManager::_add_main_view(MainViewTab p_id, const String &p_name, c
 	ERR_FAIL_COND_V(main_view_toggle_map.has(p_id), nullptr);
 
 	Button *toggle_button = memnew(Button);
-	toggle_button->set_flat(true);
 	toggle_button->set_theme_type_variation("MainScreenButton");
 	toggle_button->set_toggle_mode(true);
 	toggle_button->set_button_group(main_view_toggles_group);
@@ -1184,7 +1183,7 @@ ProjectManager::ProjectManager() {
 		title_bar->add_child(right_hbox);
 
 		quick_settings_button = memnew(Button);
-		quick_settings_button->set_flat(true);
+		quick_settings_button->set_theme_type_variation("FlatMenuButton");
 		quick_settings_button->set_text(TTR("Settings"));
 		right_hbox->add_child(quick_settings_button);
 		quick_settings_button->connect(SceneStringName(pressed), callable_mp(this, &ProjectManager::_show_quick_settings));
